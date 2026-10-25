@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pit Wall · F1 Pomodoro</title>
+<style>
+:root{--bg:#0d0f14;--p:#161a22;--l:#272d3a;--t:#eef1f6;--m:#8d95a8;--r:#e10600;--tc:#e10600}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t);font:15px/1.45 "Segoe UI",system-ui,Arial,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:12px 18px;border-bottom:3px solid var(--r);background:var(--p)}
+h1{margin:0;font:italic 800 24px/1 "Arial Black",Impact,sans-serif;letter-spacing:-.5px}
+h1 b{color:var(--r)}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;color:var(--m);padding:8px 12px;font:600 14px inherit;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-12px}
+nav button.on{color:var(--t);border-color:var(--tc)}
+main{max-width:1050px;margin:0 auto;padding:18px}
+.card{background:var(--p);border:1px solid var(--l);border-radius:10px;padding:16px;margin-bottom:14px}
+.card h3,h2{margin:0 0 10px}
+.g2{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label{display:block;color:var(--m);font-size:13px;margin-bottom:3px}
+select,input,textarea{width:100%;background:var(--bg);color:var(--t);border:1px solid var(--l);border-radius:6px;padding:9px;font:inherit}
+textarea{min-height:70px;resize:vertical}
+button{font:600 14px inherit}
+.b{background:var(--tc);color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}
+.b.o{background:none;border:1px solid var(--l);color:var(--t)}
+.b.d{background:#3a1216;border:1px solid #6b1c24}
+.b:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,nav button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.row{display:flex;gap:8px;align-items:end}
+.star{background:none;border:1px solid var(--l);border-radius:6px;color:#ffd400;font-size:20px;width:42px;height:40px;cursor:pointer}
+svg{width:100%;height:auto;display:block}
+.tm{font:800 76px/1 "Arial Black",Impact,monospace;font-variant-numeric:tabular-nums;margin:6px 0}
+.ph{color:var(--tc);font-weight:700;font-size:18px}
+.m{color:var(--m)}
+.bar{height:8px;background:var(--l);border-radius:4px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--tc);width:0}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}
+.dots span{width:22px;height:8px;border-radius:2px;background:var(--l)}
+.dots .ok{background:#2ecc71}.dots .cur{background:var(--tc)}.dots .x{background:var(--r)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+#rd p{margin:0 0 7px;padding-left:10px;border-left:3px solid var(--l);color:var(--m)}
+#rd p:first-child{color:var(--t);border-color:var(--tc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.grid .card{margin:0}
+.big{font:italic 800 64px/1 "Arial Black",Impact,sans-serif}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.st div{background:var(--bg);border-radius:8px;padding:10px}
+.st b{display:block;font-size:22px}
+table{width:100%;border-collapse:collapse}
+td,th{padding:7px 6px;border-bottom:1px solid var(--l);text-align:left}
+th{color:var(--m);font-weight:600;font-size:13px}
+.pb{height:6px;background:#ffd400;border-radius:3px;min-width:2px}
+.li{display:flex;gap:12px;align-items:center;cursor:pointer}
+.li:hover{border-color:var(--tc)}
+.pos{font:italic 800 26px "Arial Black",Impact,sans-serif;width:64px}
+.dcard{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+.ros{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;margin-top:12px}
+.ros button{background:var(--bg);border:2px solid var(--l);border-radius:8px;padding:3px;cursor:pointer}
+.ros button.on{border-color:var(--tc);background:var(--p)}
+.ros button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.ros svg{margin:auto}
+@media(max-width:760px){.g2{grid-template-columns:1fr}.tm{font-size:60px}}
+@media(prefers-reduced-motion:no-preference){.bar i{transition:width .4s linear}}
+</style></head><body>
+<header><h1>PIT<b>WALL</b></h1>
+<nav><button data-t="race" class="on">Race</button><button data-t="fav">Favourites</button><button data-t="recent">Recent GPs</button><button data-t="hist">History</button></nav><span id="stk" class="m" style="margin-left:auto"></span></header>
+<main>
+<section id="v-race">
+ <div id="setup">
+  <div class="g2">
+   <div class="card"><h2>Grid up</h2><div class="f">
+    <div><label for="cs">Grand Prix</label><div class="row"><select id="cs"></select><button class="star" id="fs" title="Favourite this circuit" aria-label="Toggle favourite">☆</button></div></div>
+    <div><label for="ds">Your driver</label><select id="ds"></select></div>
+    <div><label for="ps">Lap length / pit stop</label><select id="ps"></select></div>
+    <div><label for="ln">Number of laps</label><input id="ln" type="number" min="1" max="12" value="4"></div>
+    <div><label for="sp">Car speed on screen</label><select id="sp"><option value="1">Cruise: 1 circuit per lap</option><option value="2">Race pace: 2 circuits per lap</option><option value="4">Qualifying: 4 circuits per lap</option></select></div>
+    <div><label for="fmt">Race format</label><select id="fmt"><option value="gp">Grand Prix: pit stops between laps</option><option value="spr">Sprint: max 3 laps, no pit stops</option></select></div>
+   </div>
+   <div style="margin-top:12px"><label for="tk">Task</label><input id="tk" placeholder="e.g. Mathematics IA"></div>
+   <div style="margin-top:12px"><label for="sb">Subtasks, one per line (lap 1 gets line 1, and so on)</label><textarea id="sb" placeholder="Matrices practice&#10;Linear systems&#10;Past paper"></textarea></div>
+   <p class="m" id="note"></p>
+   <button class="b" id="go">Lights out</button></div>
+   <div class="card"><svg id="pv" viewBox="-6 -8 112 114"></svg><div id="dc" style="margin-top:8px"></div><div class="ros" id="ros" role="group" aria-label="Pick a driver"></div></div>
+  </div>
+ </div>
+ <div id="race" hidden><div class="g2">
+  <div class="card"><svg id="rt" viewBox="-6 -8 112 114"></svg></div>
+  <div>
+   <div class="card"><div class="ph" id="ph"></div><div class="tm" id="tm"></div><div class="bar"><i id="bf"></i></div><div class="m" id="tl"></div><div class="dots" id="dots"></div>
+    <div class="btns"><button class="b" id="sc">Safety car</button><button class="b o" id="sk" hidden>Skip pit stop</button><button class="b d" id="rtire">Retire (DNF)</button></div></div>
+   <div class="card"><h3>Team radio</h3><div id="rd"></div></div>
+  </div></div></div>
+</section>
+<section id="v-fav" hidden><h2>Favourite circuits</h2><div class="grid" id="fl"></div></section>
+<section id="v-recent" hidden><h2>Recent Grands Prix</h2><p class="m">Winners from this season, loaded live from the Jolpica F1 API.</p><div id="rc"></div></section>
+<section id="v-hist" hidden><h2>Race history</h2><div id="hl"></div></section>
+<section id="v-review" hidden></section>
+<p class="m" style="font-size:12px">Track layouts: bacinger/f1-circuits (MIT licence), unofficial and not affiliated with Formula 1. Stylised outlines are shown until they load.</p>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const TEAMS=[["Ferrari","#e8002d"],["Mercedes","#27f4d2"],["McLaren","#ff8000"],["Red Bull","#3671c6"],["Visa Cash App RB","#6692ff"],["Alpine","#ff87bc"],["Haas","#b6babd"],["Williams","#64c4ff"],["Audi","#c2185b"],["Aston Martin","#229971"],["Cadillac","#f2d16b"]];
+const DR=[["HAM","Lewis Hamilton",0],["LEC","Charles Leclerc",0],["RUS","George Russell",1],["ANT","Kimi Antonelli",1],["NOR","Lando Norris",2],["PIA","Oscar Piastri",2],["VER","Max Verstappen",3],["HAD","Isack Hadjar",3],["LAW","Liam Lawson",4],["LIN","Arvid Lindblad",4],["GAS","Pierre Gasly",5],["COL","Franco Colapinto",5],["OCO","Esteban Ocon",6],["BEA","Oliver Bearman",6],["ALB","Alex Albon",7],["SAI","Carlos Sainz",7],["HUL","Nico Hülkenberg",8],["BOR","Gabriel Bortoleto",8],["ALO","Fernando Alonso",9],["STR","Lance Stroll",9],["BOT","Valtteri Bottas",10],["PER","Sergio Pérez",10]];
+// Stylised outlines (not survey-accurate): closed spline through these points.
+const C=[
+["bah","Bahrain","Sakhir hosted the first Formula 1 race in the Middle East, in 2004.","10,60 15,35 35,25 45,40 60,20 85,25 90,50 70,65 55,80 30,85"],
+["sau","Saudi Arabia","Jeddah Corniche is one of the fastest street circuits on the calendar.","5,50 20,25 35,45 50,20 70,40 90,15 95,45 80,60 55,55 40,75 20,70"],
+["aus","Melbourne","Albert Park circles a lake in the middle of the city.","15,40 35,15 65,15 85,35 85,65 60,85 30,80 15,60"],
+["chn","China","Shanghai's opening corners are said to trace the Chinese character 上.","15,30 40,15 75,20 80,40 55,45 85,60 65,85 30,80 15,55"],
+["jpn","Japan","Suzuka is the only figure-eight circuit on the calendar.","20,25 50,15 75,30 60,50 35,60 15,80 45,90 80,80 85,55"],
+["mia","Miami","The Miami track wraps around Hard Rock Stadium; the first race was in 2022.","10,40 35,20 60,25 85,15 90,45 65,50 70,75 40,85 20,70"],
+["can","Canada","The final chicane's wall has caught out several world champions: the Wall of Champions.","10,50 20,25 80,15 90,35 80,55 85,80 20,85"],
+["mon","Monaco","Monaco is the slowest and tightest track on the calendar.","10,70 25,50 20,30 45,20 60,35 85,25 90,50 70,65 75,85 40,80"],
+["prt","Portugal","The Algarve circuit in Portimão hosted Formula 1 in 2020 and 2021.","15,55 25,25 50,20 65,40 90,35 85,65 60,80 55,60 35,85"],
+["gbr","Britain","Silverstone hosted the very first world championship race, in 1950.","15,60 20,35 45,20 70,25 90,40 75,55 85,75 55,85 40,65"],
+["aut","Austria","The Red Bull Ring has one of the shortest laps in Formula 1.","20,70 25,30 55,15 85,30 80,60 55,85 40,75"],
+["bel","Belgium","Spa-Francorchamps is the longest lap on the calendar, with the legendary Eau Rouge.","10,70 25,35 55,15 90,25 85,45 60,50 70,65 50,85 25,85"],
+["hun","Hungary","The Hungaroring is often called Monaco without the walls.","15,50 30,25 60,20 80,35 65,50 85,65 55,85 30,75"],
+["ita","Italy (Monza)","Monza, the Temple of Speed, is one of the fastest circuits in the world.","10,65 12,25 85,15 92,40 70,50 88,70 40,88"],
+["esp","Spain (Madrid)","Madrid is a new street-and-stadium style circuit joining the calendar in 2026.","15,65 20,35 50,20 80,30 90,55 65,60 60,85 30,85"],
+["aze","Azerbaijan (Baku)","Baku has a straight of about 2 km, and a section only as wide as a road car by the old castle walls.","10,75 10,30 45,25 70,10 90,25 70,45 90,65 60,85 40,60 30,85"],
+["tur","Türkiye (Istanbul)","Istanbul Park's multi-apex Turn 8 is a driver favourite.","15,60 30,25 60,20 80,40 55,45 75,70 40,85"],
+["sgp","Singapore","Singapore hosted Formula 1's first ever night race, in 2008.","10,60 20,25 60,15 85,25 80,50 55,45 50,75 25,85"],
+["usa","USA (Austin)","The Circuit of the Americas starts with a steep uphill run to Turn 1.","10,65 25,20 50,35 75,15 90,40 60,55 80,80 40,85"],
+["mex","Mexico City","Mexico City sits at about 2,240 m, so the thin air reduces downforce and cooling.","10,55 20,25 80,20 90,50 70,55 75,80 30,85"],
+["bra","Brazil","Interlagos runs anticlockwise, which is rare on the calendar.","20,30 55,15 85,35 70,55 90,75 50,85 25,70 40,50"],
+["lvg","Las Vegas","The Las Vegas Grand Prix is a night race down the famous Strip.","10,80 10,20 60,15 90,20 90,45 40,50 85,75 55,88"],
+["qat","Qatar","Lusail International Circuit is a fast, flowing floodlit track built for MotoGP.","15,50 25,25 55,15 80,30 85,55 65,70 70,85 35,85 25,70"],
+["abu","Abu Dhabi","Yas Marina's race starts in daylight and ends under lights; the pit exit goes through a tunnel.","10,60 15,30 45,20 70,40 85,25 92,55 60,70 70,85 30,85"]
+].map(c=>[c[0],c[1],c[2],c[3].split(" ").map(p=>p.split(",").map(Number))]);
+const PRE=[["25 min / 5 min pit",1500,300],["30 min / 5 min pit",1800,300],["45 min / 10 min pit",2700,600],["50 min / 10 min pit",3000,600],["60 min / 15 min pit",3600,900],["90 min / 20 min pit",5400,1200],["Test: 1 min / 15 s",60,15]];
+const MOT=["Great pace. Keep it clean.","Stay focused, the gap is closing.","Tyres are good, push now.","Consistency wins championships.","No distractions, just the next sector.","Lovely lap. Head down.","Every minute here is a place gained on Sunday."];
+const cir=id=>C.find(c=>c[0]===id);
+const GEO={bah:"bh-2002",sau:"sa-2021",aus:"au-1953",chn:"cn-2004",jpn:"jp-1962",mia:"us-2022",can:"ca-1978",mon:"mc-1929",prt:"pt-2008",gbr:"gb-1948",aut:"at-1969",bel:"be-1925",hun:"hu-1986",ita:"it-1922",esp:"es-2026",aze:"az-2016",tur:"tr-2005",sgp:"sg-2008",usa:"us-2012",mex:"mx-1962",bra:"br-1940",lvg:"us-2023",qat:"qa-2004",abu:"ae-2009"};
+let geoC=store.get("geo",{});
+const useGeo=(id,pts)=>{const c=cir(id);if(c&&pts&&pts.length>8)c[3]=pts};
+Object.keys(geoC).forEach(id=>useGeo(id,geoC[id]));
+function norm(co){if(co.length>1&&co[0][0]===co[co.length-1][0]&&co[0][1]===co[co.length-1][1])co=co.slice(0,-1);
+ const la=co.reduce((a,p)=>a+p[1],0)/co.length,k=Math.cos(la*Math.PI/180),P=co.map(p=>[p[0]*k,-p[1]]);
+ const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),s=88/Math.max(x1-x0,y1-y0),n=Math.min(100,P.length),o=[];
+ for(let i=0;i<n;i++){const p=P[Math.floor(i*P.length/n)];o.push([+((p[0]-(x0+x1)/2)*s+50).toFixed(1),+((p[1]-(y0+y1)/2)*s+50).toFixed(1)])}return o}
+async function loadGeo(){let ch=false;
+ await Promise.all(Object.keys(GEO).filter(id=>!geoC[id]).map(async id=>{try{
+  const j=await(await fetch(`https://raw.githubusercontent.com/bacinger/f1-circuits/master/circuits/${GEO[id]}.geojson`)).json();
+  const g=(j.features?j.features[0]:j).geometry,co=g.type==="MultiLineString"?g.coordinates.flat():g.coordinates;
+  geoC[id]=norm(co);useGeo(id,geoC[id]);ch=true}catch(e){}}));
+ if(ch){store.set("geo",geoC);preview();renderFav()}}
+const fm=s=>{s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+let fav=store.get("fav",[]),hist=store.get("hist",[]),S=null,tm=null,streak=store.get("streak",{last:"",cur:0,best:0});
+const dkey=d=>{d=d||new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const yday=()=>{const y=new Date();y.setDate(y.getDate()-1);return dkey(y)};
+const liveStreak=()=>streak.last===dkey()||streak.last===yday()?streak.cur:0;
+function showStreak(){const n=liveStreak();$("#stk").textContent=(n?"🔥 ":"")+n+"-day streak · best "+streak.best}
+function bumpStreak(){if(streak.last!==dkey()){streak.cur=streak.last===yday()?streak.cur+1:1;streak.last=dkey();streak.best=Math.max(streak.best,streak.cur);store.set("streak",streak)}showStreak()}
+
+function pathD(p){const n=p.length;let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<n;i++){const a=p[(i-1+n)%n],b=p[i],c=p[(i+1)%n],e=p[(i+2)%n];d+=`C${b[0]+(c[0]-a[0])/6},${b[1]+(c[1]-a[1])/6} ${c[0]-(e[0]-b[0])/6},${c[1]-(e[1]-b[1])/6} ${c[0]},${c[1]}`}return d+"Z"}
+function flagsSVG(c,fl){const d=pathD(c[3]);return [...Array(100)].map((_,i)=>fl[i]?`<path d="${d}" pathLength="100" fill="none" stroke="${fl[i]==1?"#ffd400":"#ff1a1a"}" stroke-width="3.4" stroke-dasharray="0 ${i} 1.3 300"/>`:"").join("")}
+function trackSVG(c,fl=[]){const d=pathD(c[3]),[x,y]=c[3][0];return `<path d="${d}" fill="none" stroke="#2a3040" stroke-width="5.2" stroke-linejoin="round"/><path id="tp" d="${d}" pathLength="100" fill="none" stroke="#5b6479" stroke-width="3" stroke-linejoin="round"/><g id="ov">${flagsSVG(c,fl)}</g><rect x="${x-.8}" y="${y-3}" width="1.6" height="6" fill="#fff"/>`}
+
+/* ---------- driver avatars (blocky, generic look; not likenesses) ---------- */
+const SKIN=["#f6d2a8","#e3b183","#c58c5e","#8d5a3b","#f2c9a0"],ACC=["#ffffff","#ffd400","#111111","#e10600","#27f4d2"];
+const lum=h=>{const n=parseInt(h.slice(1),16);return((n>>16)*299+((n>>8&255)*587)+(n&255)*114)/1000};
+function figure(i,w){const d=DR[i],col=TEAMS[d[2]][1],sk=SKIN[(i*3)%5],ac=ACC[(i*2+1)%5],tx=lum(col)>150?"#111":"#fff";
+ return `<svg viewBox="0 0 60 92" style="width:${w}px" role="img" aria-label="${d[1]} character">
+<rect x="8" y="34" width="9" height="30" rx="2" fill="${col}"/><rect x="43" y="34" width="9" height="30" rx="2" fill="${col}"/>
+<rect x="8" y="60" width="9" height="6" rx="2" fill="${sk}"/><rect x="43" y="60" width="9" height="6" rx="2" fill="${sk}"/>
+<rect x="17" y="34" width="26" height="32" rx="2" fill="${col}"/><rect x="17" y="34" width="26" height="4" fill="${ac}"/>
+<text x="30" y="56" text-anchor="middle" font-size="9" font-weight="800" font-family="Arial Black,Arial,sans-serif" fill="${tx}">${d[0]}</text>
+<rect x="17" y="66" width="12" height="20" rx="2" fill="#262b36"/><rect x="31" y="66" width="12" height="20" rx="2" fill="#262b36"/>
+<rect x="16" y="84" width="14" height="6" rx="2" fill="#fff"/><rect x="30" y="84" width="14" height="6" rx="2" fill="#fff"/>
+<rect x="16" y="6" width="28" height="28" rx="6" fill="${sk}"/>
+<path d="M14 20V14a8 8 0 0 1 8-8H38a8 8 0 0 1 8 8V20Z" fill="${col}"/><rect x="14" y="17" width="32" height="3" fill="${ac}"/>
+<circle cx="24" cy="26" r="2" fill="#111"/><circle cx="36" cy="26" r="2" fill="#111"/>
+<path d="M23 30q7 5 14 0" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>`}
+function carSVG(i,w){const d=DR[i],col=TEAMS[d[2]][1],ac=ACC[(i*2+1)%5],tx=lum(col)>150?"#111":"#fff";
+ return `<svg viewBox="0 0 130 46" style="width:${w}px" role="img" aria-label="${d[1]} car">
+<rect x="4" y="6" width="18" height="5" rx="1" fill="${col}"/><rect x="11" y="10" width="3" height="14" fill="#262b36"/>
+<path d="M10 28L30 20H62L74 23H100L124 31V35H10Z" fill="${col}"/><rect x="26" y="29" width="76" height="2.5" fill="${ac}"/>
+<circle cx="56" cy="16" r="5" fill="${col}" stroke="${ac}" stroke-width="1.5"/><path d="M45 21q11-12 23 0" fill="none" stroke="#262b36" stroke-width="2.5"/>
+<text x="84" y="32" font-size="7" font-weight="800" font-family="Arial Black,Arial,sans-serif" fill="${tx}">${d[0]}</text>
+<rect x="106" y="35" width="22" height="4" rx="1" fill="${col}"/>
+<circle cx="30" cy="34" r="9" fill="#111"/><circle cx="30" cy="34" r="4" fill="#9aa1b3"/>
+<circle cx="100" cy="35" r="8" fill="#111"/><circle cx="100" cy="35" r="3.5" fill="#9aa1b3"/></svg>`}
+
+/* ---------- setup ---------- */
+function fillSel(){const cur=$("#cs").value||C[0][0];$("#cs").innerHTML=C.map(c=>`<option value="${c[0]}">${fav.includes(c[0])?"★ ":""}${c[1]}</option>`).join("");$("#cs").value=cur;$("#fs").textContent=fav.includes(cur)?"★":"☆"}
+function preview(){const c=cir($("#cs").value),d=DR[$("#ds").value],t=TEAMS[d[2]];$("#pv").innerHTML=trackSVG(c);document.documentElement.style.setProperty("--tc",t[1]);const di=+$("#ds").value;$("#dc").innerHTML=`<div class="dcard">${figure(di,92)}<div>${carSVG(di,210)}<div style="margin-top:6px"><b style="color:${t[1]}">${d[1]}</b> · ${t[0]}</div></div></div><div class="m" style="margin-top:8px">${c[2]}</div>`;document.querySelectorAll("#ros button").forEach(b=>b.classList.toggle("on",+b.dataset.i===di));$("#fs").textContent=fav.includes(c[0])?"★":"☆"}
+function initSetup(){fillSel();$("#ds").innerHTML=TEAMS.map((t,ti)=>`<optgroup label="${t[0]}">`+DR.map((d,i)=>d[2]===ti?`<option value="${i}">${d[1]}</option>`:"").join("")+"</optgroup>").join("");$("#ros").innerHTML=DR.map((d,i)=>`<button type="button" data-i="${i}" title="${d[1]}" aria-label="${d[1]}">${figure(i,38)}</button>`).join("");$("#ps").innerHTML=PRE.map((p,i)=>`<option value="${i}">${p[0]}</option>`).join("");$("#note").textContent="Every 4th pit stop is a long one (3x). Sprint races skip pit stops and punish safety cars harder. Finish at least one lap a day to keep your streak.";preview()}
+$("#ros").onclick=e=>{const b=e.target.closest("button");if(b){$("#ds").value=b.dataset.i;preview()}};
+$("#cs").onchange=()=>{fillSel();preview()};$("#ds").onchange=preview;
+$("#fs").onclick=()=>{const id=$("#cs").value;fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];store.set("fav",fav);fillSel();preview();renderFav()};
+
+/* ---------- race ---------- */
+function radio(t){S.log.unshift(t);S.log=S.log.slice(0,5);$("#rd").innerHTML=S.log.map(x=>`<p>${x}</p>`).join("")}
+function frac(){return S.ph==="lap"?((S.t/S.dur)*S.speed)%1:0}
+function start(){
+ const c=cir($("#cs").value),d=DR[$("#ds").value],p=PRE[$("#ps").value],spr=$("#fmt").value==="spr",laps=Math.max(1,Math.min(spr?3:12,+$("#ln").value||1));
+ const task=$("#tk").value.trim()||"Focus",subs=$("#sb").value.split("\n").map(s=>s.trim()).filter(Boolean);
+ const titles=[...Array(laps)].map((_,i)=>subs.length?task+" · "+subs[i%subs.length]:task);
+ S={c,d,p,laps,spr,titles,speed:+$("#sp").value,i:0,ph:"lap",t:0,dur:p[1],paused:false,pauseT:0,lapPause:0,lapSc:0,sc:0,pitT:0,pitS:0,tf:0,res:[],flags:[],all:[],log:[],sent:{},last:Date.now(),done:false};
+ $("#setup").hidden=true;$("#race").hidden=false;
+ const col=TEAMS[d[2]][1];document.documentElement.style.setProperty("--tc",col);
+ $("#rt").innerHTML=trackSVG(c)+`<g id="car"><circle r="2.3" fill="${col}" stroke="#fff" stroke-width=".7"/><text id="cl" y="-3.8" text-anchor="middle" font-size="3.3" font-weight="700" fill="#fff" stroke="#0d0f14" stroke-width=".9" paint-order="stroke"></text></g>`;
+ S.pe=$("#rt #tp");S.L=S.pe.getTotalLength();
+ radio(`Radio check, ${d[1].split(" ").pop()}. Lights out in 3, 2, 1. Go!`);
+ clearInterval(tm);tm=setInterval(tick,250);ui();
+}
+function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.1;o.start();o.stop(a.currentTime+.4)}catch(e){}}
+function tick(){
+ if(!S||S.done)return;const now=Date.now(),dt=Math.min(5,(now-S.last)/1000);S.last=now;
+ if(S.paused){S.pauseT+=dt;S.lapPause+=dt;const k=Math.min(99,Math.floor(frac()*100));S.flags[k]=1;S.all[k]=Math.max(S.all[k]||0,1);paint();ui();return}
+ S.t+=dt;if(S.ph==="lap")S.tf+=dt;
+ const r=S.dur-S.t,u=S.t/S.dur,k=S.ph+S.i;
+ if(S.ph==="lap"){
+  if(u>.12&&!S.sent[k+"a"]){S.sent[k+"a"]=1;radio(MOT[Math.floor(Math.random()*MOT.length)])}
+  if(u>.4&&!S.sent[k+"f"]){S.sent[k+"f"]=1;radio("GP fact: "+S.c[2])}
+  if(u>.65&&!S.sent[k+"b"]){S.sent[k+"b"]=1;radio(MOT[Math.floor(Math.random()*MOT.length)])}
+  if(!S.spr&&S.i<S.laps-1&&r<=Math.min(60,S.dur*.25)&&!S.sent[k+"p"]){S.sent[k+"p"]=1;radio(`Box, box! Pit stop in ${fm(r)}.`)}
+ }
+ if(r<=0)endPhase();ui();
+}
+function endPhase(){
+ if(S.ph==="lap"){
+  S.res.push({title:S.titles[S.i],sec:Math.round(S.dur),pause:Math.round(S.lapPause),sc:S.lapSc,ok:true});
+  if(S.i>=S.laps-1){beep();return finish(false)}
+  if(S.spr){nextLap();return}S.pitT++;S.ph="pit";S.t=0;S.dur=S.p[2]*((S.i+1)%4===0?3:1);beep();
+  radio(((S.i+1)%4===0?"Long pit stop. ":"")+"In lap complete. Stretch, water, eyes off the screen.");
+ }else nextLap();
+}
+function nextLap(){S.i++;S.ph="lap";S.t=0;S.dur=S.p[1];S.lapPause=0;S.lapSc=0;S.flags=[];paint();beep();radio(`${S.spr?"No stops in a sprint.":"Pit stop done."} Lap ${S.i+1}: ${S.titles[S.i]}. Push!`)}
+function paint(){const o=$("#rt #ov");if(o)o.innerHTML=flagsSVG(S.c,S.flags)}
+function ui(){
+ const lap=S.ph==="lap",f=frac(),pt=S.pe.getPointAtLength(f*S.L);
+ $("#car").setAttribute("transform",`translate(${pt.x},${pt.y})`);
+ $("#cl").textContent=lap?S.d[0]+" · "+(S.titles[S.i].length>30?S.titles[S.i].slice(0,29)+"…":S.titles[S.i]):S.d[0]+" · PIT";
+ $("#ph").textContent=lap?`Lap ${S.i+1} of ${S.laps}`:`Pit stop after lap ${S.i+1}`;
+ $("#tm").textContent=fm(S.dur-S.t);$("#bf").style.width=Math.min(100,S.t/S.dur*100)+"%";
+ $("#tl").textContent=lap?S.titles[S.i]:"Tyres off, breathe, hydrate.";
+ $("#sc").hidden=!lap;$("#sc").textContent=S.paused?"Green flag (resume)":"Safety car (pause)";$("#sk").hidden=lap;
+ $("#dots").innerHTML=[...Array(S.laps)].map((_,i)=>`<span class="${i<S.res.filter(r=>r.ok).length?"ok":i===S.i?"cur":""}"></span>`).join("");
+ document.title=(S.paused?"⏸ ":"")+fm(S.dur-S.t)+" · "+(lap?"Lap "+(S.i+1):"Pit")+" · Pit Wall";
+}
+$("#sc").onclick=()=>{if(!S||S.done||S.ph!=="lap")return;S.paused=!S.paused;if(S.paused){S.sc++;S.lapSc++;radio("Safety car deployed. Clock paused.")}else radio("Green flag, green flag! Back to it.");ui()};
+$("#sk").onclick=()=>{if(!S||S.done||S.ph!=="pit")return;S.pitS++;S.pitT--;nextLap();ui()};
+$("#rtire").onclick=()=>{if(S&&!S.done&&confirm("Retire from the race? This is recorded as a DNF."))finish(true)};
+
+function finish(ret){
+ S.done=true;clearInterval(tm);document.title="Pit Wall · F1 Pomodoro";
+ if(ret){const k0=Math.floor(frac()*100);for(let k=k0;k<100;k++){S.flags[k]=2;S.all[k]=2}paint();
+  if(S.ph==="lap")S.res.push({title:S.titles[S.i],sec:Math.round(S.t),pause:Math.round(S.lapPause),sc:S.lapSc,ok:false});radio("Retired. We'll go again.")}
+ else radio("Chequered flag! Great job.");
+ const done=S.res.filter(r=>r.ok).length,pen=S.sc+Math.floor(S.pauseT/60),pos=ret?"DNF":"P"+Math.min(10,1+(S.spr?pen:Math.floor(pen/2)));
+ const rec={id:Date.now(),fmt:S.spr?"Sprint":"Grand Prix",date:new Date().toISOString(),cid:S.c[0],dc:S.d[0],dn:S.d[1],team:TEAMS[S.d[2]][0],col:TEAMS[S.d[2]][1],laps:S.laps,done,focus:Math.round(S.tf),pause:Math.round(S.pauseT),sc:S.sc,pits:S.pitT,skipped:S.pitS,pos,pen,res:S.res,flags:[...Array(100)].map((_,i)=>S.all[i]||0)};
+ if(done>0)bumpStreak();hist.unshift(rec);hist=hist.slice(0,100);store.set("hist",hist);renderHist();
+ setTimeout(()=>showReview(rec),900);
+}
+
+/* ---------- review / history / favourites / recent ---------- */
+function verdict(r){const n=r.pos==="DNF"?-1:+r.pos.slice(1);
+ if(n<0)return `Retired after ${r.done} of ${r.laps} laps. Reset, fix the plan, and go again with shorter laps if needed.`;
+ if(n===1)return "Pole to flag. No wasted time, no safety cars. Textbook.";
+ if(n<=3)return "Podium finish. A few interruptions, but the race pace was strong.";
+ if(n<=6)return "Points finish. Fewer safety cars next time and you're on the podium.";
+ return "You finished, but the clock was stopped a lot. Try a shorter lap length or silence your phone before lights out."}
+function showReview(r){const c=cir(r.cid),mx=Math.max(1,...r.res.map(x=>x.pause/Math.max(1,x.sec)));
+ $("#v-review").innerHTML=`<div class="card" style="border-top:4px solid ${r.col}"><div class="li" style="cursor:default"><div class="big" style="color:${r.col}">${r.pos}</div><div><h2 style="margin:0">${c[1]} ${r.fmt==="Sprint"?"Sprint":"Grand Prix"}</h2><span class="m">${r.dn} · ${r.team} · ${new Date(r.date).toLocaleString()}</span></div></div>
+ <p>${verdict(r)}</p>
+ <div class="st"><div><b>${r.done}/${r.laps}</b>laps completed</div><div><b>${fm(r.focus)}</b>focus time</div><div><b>${r.sc}</b>safety cars (${fm(r.pause)})</div><div><b>${r.pits}</b>pit stops taken</div><div><b>${r.skipped}</b>pit stops skipped</div><div><b>${r.pen}</b>penalty points</div><div><b>${liveStreak()}</b>day streak</div></div>
+ <div class="g2"><div><table><tr><th>Lap</th><th>Task</th><th>Time</th><th>Safety car</th><th></th></tr>${r.res.map((x,i)=>`<tr><td>${i+1}</td><td>${x.title}</td><td>${fm(x.sec)}</td><td>${fm(x.pause)}<div class="pb" style="width:${Math.round(x.pause/Math.max(1,x.sec)/mx*100)}%"></div></td><td>${x.ok?"✔":"✖"}</td></tr>`).join("")}</table></div>
+ <div><svg viewBox="-6 -8 112 114">${trackSVG(c,r.flags)}</svg><p class="m">Yellow: where you hit the safety car. Red: the part of the circuit left unfinished.</p></div></div>
+ <p class="m">Position = 1 + penalty points / 2 (Sprint: 1 + penalty points), max P10. Penalty points = safety cars + minutes paused. Retiring is a DNF.</p>
+ <button class="b" id="nr">New race</button></div>`;
+ $("#nr").onclick=()=>{S=null;$("#race").hidden=true;$("#setup").hidden=false;preview();tab("race")};tab("review")}
+function renderHist(){$("#hl").innerHTML=hist.length?hist.map(r=>`<div class="card li" data-id="${r.id}" tabindex="0"><div class="pos" style="color:${r.col}">${r.pos}</div><div><b>${cir(r.cid)[1]}${r.fmt==="Sprint"?" Sprint":""}</b> · ${r.dn}<br><span class="m">${new Date(r.date).toLocaleDateString()} · ${r.done}/${r.laps} laps · ${fm(r.focus)} focus</span></div></div>`).join("")+`<button class="b o" id="ch">Clear history</button>`:`<p class="m">No races yet. Start one from the Race tab.</p>`;
+ document.querySelectorAll("#hl .li").forEach(e=>{const o=()=>showReview(hist.find(r=>r.id==e.dataset.id));e.onclick=o;e.onkeydown=ev=>{if(ev.key==="Enter")o()}});
+ const b=$("#ch");if(b)b.onclick=()=>{if(confirm("Delete all saved races?")){hist=[];store.set("hist",hist);renderHist()}}}
+function renderFav(){$("#fl").innerHTML=fav.length?fav.map(id=>{const c=cir(id);return `<div class="card"><svg viewBox="-6 -8 112 114">${trackSVG(c).replace('id="tp"','').replace('id="ov"','')}</svg><b>${c[1]}</b><div class="btns" style="margin-top:8px"><button class="b" data-r="${id}">Race here</button><button class="b o" data-u="${id}">★ Remove</button></div></div>`}).join(""):`<p class="m">No favourites yet. Press ☆ next to the Grand Prix picker on the Race tab.</p>`;
+ document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{if(S&&!S.done){tab("race");return}$("#cs").value=b.dataset.r;fillSel();preview();tab("race")});
+ document.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{fav=fav.filter(x=>x!==b.dataset.u);store.set("fav",fav);fillSel();preview();renderFav()})}
+let rcDone=false;
+async function loadRecent(){if(rcDone)return;const el=$("#rc");el.textContent="Loading…";
+ try{const j=await(await fetch("https://api.jolpi.ca/ergast/f1/current/results/1.json?limit=100")).json();const rs=j.MRData.RaceTable.Races.slice(-8).reverse();
+  el.innerHTML=rs.length?`<table><tr><th>Round</th><th>Grand Prix</th><th>Date</th><th>Winner</th><th>Team</th></tr>`+rs.map(x=>{const q=x.Results[0];return `<tr><td>${x.round}</td><td>${x.raceName}</td><td>${x.date}</td><td>${q.Driver.givenName} ${q.Driver.familyName}</td><td>${q.Constructor.name}</td></tr>`}).join("")+"</table>":"No completed races found for this season yet.";rcDone=true}
+ catch(e){el.textContent="Could not load results. Check your connection and reopen this tab."}}
+
+/* ---------- tabs ---------- */
+function tab(t){["race","fav","recent","hist","review"].forEach(x=>$("#v-"+x).hidden=x!==t);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="recent")loadRecent();if(t==="fav")renderFav();if(t==="hist")renderHist()}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
+$("#go").onclick=start;
+initSetup();renderFav();renderHist();showStreak();
+$("#fmt").onchange=()=>{if($("#fmt").value==="spr")$("#ln").value=3};
+loadGeo();
+</script></body></html>
